@@ -5,11 +5,8 @@ TO DO
 
 - menu
 - CLI
+
 - methods for different types of queries (comes with command line)
-- Seed from API
-- dictionary with yaml file
-- api key with yaml
-- create on git
 -rake run
 
 ???
@@ -31,3 +28,7 @@ TO DO
 
 
 COMPLETE TASKS
+- Seed from API
+- dictionary with yaml file
+- api key with yaml
+- create on git

@@ -14,7 +14,8 @@ DB = ActiveRecord::Base.establish_connection(
     database: 'db/dev.sqlite'
 )
 
-require_relative './secrets'
+
+NPS_API_KEY= YAML.load_file('config/secrets.yml')["NPS_API_KEY"]
 require_all 'app'
 require_all 'lib'
 
