@@ -1,4 +1,4 @@
-KEY = #USER ENTERS KEY HERE
+KEY=NPS_API_KEY #USER ENTERS Key saved from bash profile
 BASE_URL='nps.gov/api/v1'
 
 #BASE_URL from site='api.nps.gov/api/v1'

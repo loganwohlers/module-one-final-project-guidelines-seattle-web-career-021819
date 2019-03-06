@@ -16,6 +16,7 @@ DB = ActiveRecord::Base.establish_connection(
 
 require_all 'app'
 require_all 'lib'
+require_relative './secrets'
 
 if ENV["ACTIVE_RECORD_ENV"] == "test"
   ActiveRecord::Migration.verbose = false
