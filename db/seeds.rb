@@ -11,7 +11,7 @@ State.destroy_all
 User.destroy_all
 
 
-#Iterates thru all 56 territories and creates a new state row in our db using state abbreviation- then grabs full name key using abbreviation 
+#Iterates thru all 56 territories and creates a new state row in our db using state abbreviation- then grabs full name key using abbreviation
 #as value from our yaml dictionary file
 all_50_states.each do |state|
     State.create(abbreviation: state, full_name: state_code_conversion.key(state))
@@ -25,15 +25,17 @@ end
 #want to also create corresponding state parks join table
 get_all_parks.each do |park|
     Park.create(
-        name: park["fullName"], 
-        designation: park["designation"], 
+        name: park["fullName"],
+        designation: park["designation"],
         description: park["description"],
         nps_ref: park["id"],
         url: park["url"],
         weather: park["weatherInfo"]
     )
 end
-    
+
+state_parks
+
 # #favorite
 # f1 = Favorite.create(user_id: u2.id, park_id: denali.id)
 

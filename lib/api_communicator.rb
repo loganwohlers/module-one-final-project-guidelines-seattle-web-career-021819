@@ -22,7 +22,7 @@ def printlist (arr)
 end
 
 #JSON parse the the RestClient response to URL and then return the 'data' array
-def query_hash_to_array (rest_client_response) 
+def query_hash_to_array (rest_client_response)
     JSON.parse(rest_client_response)['data']
 end
 
@@ -34,8 +34,8 @@ def get_parks_from_api(user_entered_state)
     response_arr = query_hash_to_array(response_string)
     park_names=full_names(response_arr)
     printlist(park_names)
-    
-end 
+
+end
 
 #iterates thru response_hash(from JSON/user input) and maps JUST the park name and returns it
 def full_names (arr)
@@ -54,19 +54,38 @@ end
 
 def state_parks
     get_all_parks.each do |p|
-        if p['states'].length>2
+        if p['states'].length > 2
             multi=p['states'].split(",")
-            plural.each do |pl|
-                #make new state_park
+            this_park = query_park(p["fullName"])
+            # binding.pry
+            multi.each do |state|
+                this_state = query_state(state)
+                StatePark.create(
+                  state_id: this_state.id,
+                  park_id: this_park.id
+                )
             end
         else
-            #make state_park
-            states << p['states']
+        # grab state and park object and assigning to new variable
+            this_state = query_state(p["states"])
+            this_park = query_park(p["fullName"])
+
+            StatePark.create(
+              state_id: this_state.id,
+              park_id: this_park.id
+            )
+              # binding.pry
         end
     end
 end
 
+def query_state(state)
+  State.find_by(abbreviation: state)
+end
 
+def query_park(park)
+  Park.find_by(name: park)
+end
 
 def all_50_states
     states=[]
@@ -83,7 +102,3 @@ def all_50_states
     states=states.uniq!.sort
     #printlist(states)
 end
-
-
-
-

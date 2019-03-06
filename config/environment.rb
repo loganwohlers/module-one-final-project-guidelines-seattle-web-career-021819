@@ -14,9 +14,9 @@ DB = ActiveRecord::Base.establish_connection(
     database: 'db/dev.sqlite'
 )
 
+require_relative './secrets'
 require_all 'app'
 require_all 'lib'
-require_relative './secrets'
 
 if ENV["ACTIVE_RECORD_ENV"] == "test"
   ActiveRecord::Migration.verbose = false
