@@ -1,11 +1,13 @@
 require_relative "../config/environment.rb"
-# state_code_conversion = YAML.load_file('state_codes.yml')
+
+
 class API
+    @@state_code_conversion = YAML.load_file('state_codes.yml')
     KEY=NPS_API_KEY #USER ENTERS Key saved from bash profile
     BASE_URL='nps.gov/api/v1'
 
     #helper method to print out any array as a numbered list
-    def printlist (arr)
+    def printlist(arr)
         arr.each_with_index do |h, index|
             puts "#{index+1}. #{h}"
         end
@@ -17,9 +19,6 @@ class API
         query_hash_to_array(response_string)
     end
 
-    def all_park_names
-      self.all_parks.map { |park|  park['fullName']}
-    end
 
     #JSON parse the the RestClient response to URL and then return value of the 'data' key-- an array of hashes for each item(park)
     def query_hash_to_array (rest_client_response)
@@ -27,9 +26,9 @@ class API
     end
 
     #goes through
-    def all_states
+    def all_states(arr)
         states=[]
-        all_parks.each do |p|
+        arr.each do |p|
             if p['states'].length>2
                 plural=p['states'].split(",")
                 plural.each do |pl|
@@ -46,8 +45,8 @@ class API
     # end
 
     #Going thru all parks- looking at their state(s) in the api and then creating all StatePark associations
-    def state_parks
-        all_parks.each do |p|
+    def state_parks(arr)
+        arr.each do |p|
             this_park = query_park(p["fullName"])
             if p['states'].length > 2
                 multi=p['states'].split(",")
@@ -75,7 +74,45 @@ class API
         Park.find_by(name: park)
     end
 
-    # def query_park(park)
-    #     Park.find_by(name: park)
-    # end
+    def all_park_names
+        Park.all.map { |park| park.name }
+    end
+
+    def all_state_names
+        names=State.all.map { |state| state.full_name }
+    end
+
+    def lenient_name_search(name)
+        any_results=false
+        while !any_results
+            results=all_park_names.select do |n|
+                n.downcase.include?(name.downcase)
+            end
+            if results.length>0
+                any_results=true
+            else
+                puts "No results! Please try another search"
+                name = gets.chomp
+            end
+        end
+     results
+    end
+
+    def lenient_state_search(name)
+        any_results=false
+        while !any_results
+            results= @@state_code_conversion.select do |k,v|
+                k.downcase.include?(name.downcase) ||  v.downcase.include?(name.downcase)
+            end.to_a
+            if results.length>0
+                any_results=true
+            else
+                puts "No results! Please try another search"
+                name = gets.chomp
+            end    
+        end
+        results
+    end
 end
+
+

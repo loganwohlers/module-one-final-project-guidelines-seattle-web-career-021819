@@ -8,6 +8,7 @@ cli=CLI.new(api)
 # cli.welcome
 # cli.account
 # cli.start_menu
-# cli.search_menu
+#cli.search_by_name
+cli.search_by_state
 # api.printlist(api.all_park_names)
-p api.all_parks
+

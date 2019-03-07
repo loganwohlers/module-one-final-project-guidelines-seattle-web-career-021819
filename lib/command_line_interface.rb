@@ -45,6 +45,17 @@ class CLI
       api_communicator.printlist(@@search_menu)
       response = gets.chomp.to_i
 
+      if response == 1
+        search_by_name
+      elsif response == 2
+        create_account
+      elsif response == 3
+        search_menu
+      elsif response == 4
+        puts "Exit"
+      else
+        puts "Invalid input"
+      end
     end
 
     # methods supporting start menu
@@ -78,13 +89,7 @@ class CLI
             puts "Couldn't find you!"
         end
     end
-    #         puts "You aren't in our system!!"
-    #         puts "making you a profile now....created"
-    #         new_user=User.create(title: response)
-    #         return new_user
-    #     end
-    # end
-
+    
     # Returns all usernames
     def usernames
         User.all.map do |u|
@@ -102,6 +107,27 @@ class CLI
         p acct
     end
 
+    def search_by_name 
+        puts "Please enter the name of a national park"
+        response=gets.chomp
+        results=self.api_communicator.lenient_name_search(response)
+        p self.api_communicator.query_park(array_selector(results))
+    end
 
+    def search_by_state 
+        puts "Please enter a state"
+        response=gets.chomp
+        results=self.api_communicator.lenient_state_search(response)
+        p self.api_communicator.query_state(array_selector(results))
+    end
+
+    def array_selector(arr)
+        api_communicator.printlist(arr)
+        puts "Pick a number to confirm selection"
+        num = gets.chomp.to_i
+        selection=arr[num-1]
+        puts "You've chosen #{selection}"
+        selection
+    end
 
 end

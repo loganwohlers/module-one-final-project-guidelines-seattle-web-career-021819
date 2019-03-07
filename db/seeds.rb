@@ -8,20 +8,17 @@ StatePark.destroy_all
 State.destroy_all
 User.destroy_all
 
+#we call on our all_parks method once and save the resulting array as opposed to calling on the api multiple times
+ALL_PARKS=api.all_parks
 
-#Iterates thru all 56 territories and creates a new state row in our db using state abbreviation- then grabs full name key using abbreviation
-#as value from our yaml dictionary file
-api.all_states.each do |state|
-    State.create(abbreviation: state, full_name: state_code_conversion.key(state))
-end
 
-# #user
-u1 = User.create(name: "Unknown User")
-u2 = User.create(name: "Ellen")
+#creates an array of all states (by state code from the ALL_PARKS array data)
+ALL_STATES=api.all_states(ALL_PARKS)
 
-#currently creates a row for all 496 natl parks
-#want to also create corresponding state parks join table
-api.all_parks.each do |park|
+
+
+#seeds db w/ all national parks
+ALL_PARKS.each do |park|
     Park.create(
         name: park["fullName"],
         designation: park["designation"],
@@ -32,6 +29,16 @@ api.all_parks.each do |park|
     )
 end
 
-api.state_parks
+#seeds all of our states in the db using state codes (also adds state's full name via conversion from our yaml dictionary file
+ALL_STATES.each do |state|
+    State.create(abbreviation: state, full_name: state_code_conversion.key(state))
+end
+
+# #user
+u1 = User.create(name: "Unknown User")
+u2 = User.create(name: "Ellen")
+
+#Seeding all state/park join table via state_parks method from api_comm file
+api.state_parks(ALL_PARKS)
 
 binding.pry
