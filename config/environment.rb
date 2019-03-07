@@ -19,6 +19,8 @@ NPS_API_KEY= YAML.load_file('config/secrets.yml')["NPS_API_KEY"]
 require_all 'app'
 require_all 'lib'
 
+ActiveRecord::Base.logger = nil
+
 if ENV["ACTIVE_RECORD_ENV"] == "test"
   ActiveRecord::Migration.verbose = false
 end

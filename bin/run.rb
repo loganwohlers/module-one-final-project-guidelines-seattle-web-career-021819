@@ -1,9 +1,16 @@
 require_relative "../config/environment.rb"
 
-# binding.pry
-# 0
 api=API.new
 cli=CLI.new(api)
+
+# binding.pry
+# 0
+
 cli.welcome
-cli.test222
+cli.account
+
+
+
+
+
 

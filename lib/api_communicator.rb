@@ -10,10 +10,6 @@ class API
         end
     end
 
-    #JSON parse the the RestClient response to URL and then return the 'data' array
-    def query_hash_to_array (rest_client_response)
-        JSON.parse(rest_client_response)['data']
-    end
 
     # make the web request
     def get_parks_from_api(user_entered_state)
@@ -22,8 +18,13 @@ class API
         #['data'] on response_string returns an ARRAY of hashes that we can then work on
         response_arr = query_hash_to_array(response_string)
         park_names=full_names(response_arr)
-        printlist(park_names)
 
+    end
+
+
+    #JSON parse the the RestClient response to URL and then return value of the 'data' key-- an array of hashes for each item(park)
+    def query_hash_to_array (rest_client_response)
+        JSON.parse(rest_client_response)['data']
     end
 
     #iterates thru response_hash(from JSON/user input) and maps JUST the park name and returns it
