@@ -17,6 +17,10 @@ class API
         query_hash_to_array(response_string)
     end
 
+    def all_park_names
+      self.all_parks.map { |park|  park['fullName']}
+    end
+
     #JSON parse the the RestClient response to URL and then return value of the 'data' key-- an array of hashes for each item(park)
     def query_hash_to_array (rest_client_response)
         JSON.parse(rest_client_response)['data']
@@ -70,4 +74,8 @@ class API
     def query_park(park)
         Park.find_by(name: park)
     end
+
+    # def query_park(park)
+    #     Park.find_by(name: park)
+    # end
 end

@@ -16,7 +16,8 @@ api.all_states.each do |state|
 end
 
 # #user
- u2 = User.create(name: "Ellen")
+u1 = User.create(name: "Unknown User")
+u2 = User.create(name: "Ellen")
 
 #currently creates a row for all 496 natl parks
 #want to also create corresponding state parks join table
