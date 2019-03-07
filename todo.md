@@ -5,6 +5,7 @@ TO DO
 
 - menu
 - CLI
+-NO DUPES on favorites (or anything else)
 
 - methods for different types of queries (comes with command line)
 -rake run
@@ -23,9 +24,6 @@ TO DO
 - readme
 - video
 - ppt
-
-
-
 
 COMPLETE TASKS
 - Seed from API

@@ -5,7 +5,6 @@ cli=CLI.new(api)
 
 # binding.pry
 # 0
-
 cli.welcome
 cli.account
 
