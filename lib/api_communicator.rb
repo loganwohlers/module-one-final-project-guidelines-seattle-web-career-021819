@@ -82,6 +82,11 @@ class API
         names=State.all.map { |state| state.full_name }
     end
 
+    def all_park_categories
+        categories=Park.all.map { |park| park.designation }.uniq.sort
+    end
+
+    #park name
     def lenient_name_search(name)
         any_results=false
         while !any_results
@@ -98,6 +103,7 @@ class API
      results
     end
 
+    
     def lenient_state_search(name)
         any_results=false
         while !any_results
@@ -112,6 +118,23 @@ class API
             end    
         end
         results
+    end
+
+    #park name
+    def lenient_type_search(name)
+        any_results=false
+        while !any_results
+            results=all_parks.select do |park|
+                park['designation'].downcase.include?(name.downcase)
+            end
+            if results.length>0
+                any_results=true
+            else
+                puts "No results! Please try another search"
+                name = gets.chomp
+            end
+        end
+     results.map { |p| p['fullName']}
     end
 end
 

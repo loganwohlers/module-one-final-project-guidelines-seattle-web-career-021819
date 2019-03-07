@@ -48,9 +48,9 @@ class CLI
       if response == 1
         search_by_name
       elsif response == 2
-        create_account
+        search_by_state
       elsif response == 3
-        search_menu
+        #search by park category
       elsif response == 4
         puts "Exit"
       else
@@ -119,6 +119,15 @@ class CLI
         response=gets.chomp
         results=self.api_communicator.lenient_state_search(response)
         p self.api_communicator.query_state(array_selector(results))
+    end
+
+    def search_by_type 
+        puts "Please select a type of park from below"
+        types=['National Park', 'Historic', 'Monument', 'Preserve', 'Memorial', 'River', 'Battlefield', 'Trail', 'Recreation']
+        response=array_selector(types)
+        results=self.api_communicator.lenient_type_search(response)
+        p self.api_communicator.query_park(array_selector(results))
+
     end
 
     def array_selector(arr)
