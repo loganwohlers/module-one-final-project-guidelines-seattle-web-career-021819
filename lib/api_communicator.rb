@@ -1,6 +1,5 @@
 require_relative "../config/environment.rb"
 
-
 class API
     @@state_code_conversion = YAML.load_file('state_codes.yml')
     KEY=NPS_API_KEY #USER ENTERS Key saved from bash profile
@@ -66,14 +65,17 @@ class API
         end
     end
 
+    #finds state in the db by abbreviation
     def query_state(state)
         State.find_by(abbreviation: state)
     end
 
+    #finds park in the db by abbreviation
     def query_park(park)
         Park.find_by(name: park)
     end
 
+    #
     def all_park_names
         Park.all.map { |park| park.name }
     end

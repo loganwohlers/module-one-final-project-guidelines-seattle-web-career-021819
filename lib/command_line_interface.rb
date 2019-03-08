@@ -44,7 +44,6 @@ class CLI
         search_menu
       elsif response == 4
         goodbye
-        return
       else
         puts
         puts "Invalid input"
@@ -76,7 +75,7 @@ class CLI
         start_menu
       elsif response == 6
         goodbye
-        return
+        exit
       else
         puts
         puts "Invalid input" 
@@ -134,7 +133,7 @@ class CLI
         start_menu
       elsif response == 8
         goodbye
-        raise "See ya!"
+        exit
       else
         puts "Invalid input"
       end
@@ -142,7 +141,6 @@ class CLI
     end
 
     def favecheck(curr_user)
-        binding.pry
         curr_user.list_favorites.length>0
     end
 
