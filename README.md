@@ -18,9 +18,10 @@ Get a personal API key from the National Parks Service by clicking [here](https:
 
 ###Download the App
 From the Command Line, download FTP App by typing the following:
-
+````
 git clone git@github.com:loganwohlers/module-one-final-project-guidelines-seattle-web-career-021819.git
 cd module-one-final-project-guidelines-seattle-web-career-021819.git
+````
 
 ###Add your personal NPS API Key to the App
 This is an important step, the app will NOT run without your API key being added. Your API key will be kept in a secrets.yaml file for security purposes and to follow best practices.
@@ -31,10 +32,11 @@ This is an important step, the app will NOT run without your API key being added
 
 ###Run the App in the Command Line
 Returning to the command line, make sure you are still in the App's directory folder then enter the following:
-
+````
 bundle install
 rake db:seed
 ruby bin/run.rb
+````
 
 ### User Stories
 The following user stories guide how the user will interact with the Project.
