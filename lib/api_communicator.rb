@@ -91,8 +91,6 @@ class API
         categories=Park.all.map { |park| park.designation }.uniq.sort
     end
 
-
-
     #park name
     def lenient_name_search(name)
         any_results=false
@@ -109,7 +107,6 @@ class API
         end
      results
     end
-
 
     def lenient_state_search(name)
         any_results=false
