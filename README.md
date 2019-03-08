@@ -1,10 +1,12 @@
 # Find That Park App
 ### National Parks Service Data in the Command Line
-Video Available Here: https://youtu.be/6SeHEGRNTlY
 
-##Description
-Find That Park (FTP) is a command line app that allows users to find national parks from across the United States and keep track of their favorites. This app is a collaborative project by Logan Wohlers and Ellen Hatleberg. From the Command Line Interface (CLI), a user can search parks by name, state and park category type to learn about the nearly 500 parks managed by the U.S. National Parks Service. A user can also create a new account, see their favorite parks, add a park to their favorites and delete a park from that list. FTP utilizes data from the [National Parks Service API](https://www.nps.gov/subjects/developer/index.htm).
 
+## Description
+Find That Park (FTP) is a command line app that allows users to find national parks from across the United States and keep track of their favorites. This app is a collaborative project by Logan Wohlers and Ellen Hatleberg done as part of the Flatiron School's first module as a chance to practice working with API's and Databases. From the Command Line Interface (CLI), a user can search parks by name, state and park category type to learn about the nearly 500 parks managed by the U.S. National Parks Service. A user can also create a new account, see their favorite parks, add a park to their favorites and delete a park from that list. FTP utilizes data from the [National Parks Service API](https://www.nps.gov/subjects/developer/index.htm).
+
+See the following for a video demonstration of the program: https://www.youtube.com/watch?v=6SeHEGRNTlY&feature=youtu.be
+​
 The FTP App accesses a Sqlite3 Database using ActiveRecord. It implements CRUD (create, read, update, delete) actions and utilizes 5 models, which include User, Favorites, Park, State, and StatePark.
 
 ##Install Instructions

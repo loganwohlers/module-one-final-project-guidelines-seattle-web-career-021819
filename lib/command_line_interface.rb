@@ -36,7 +36,6 @@ class CLI
       api_communicator.printlist(@@start_menu)
       response = gets.chomp.to_i
 
-
       if response == 1
         sign_in
       elsif response == 2
@@ -45,7 +44,6 @@ class CLI
         search_menu
       elsif response == 4
         goodbye
-        return
       else
         puts
         puts "Invalid input"
@@ -54,7 +52,6 @@ class CLI
     end
 
     def search_menu
-        
       puts
       puts "------------------------------------------------------------------------"
       puts "          SEARCH MENU"
@@ -78,7 +75,7 @@ class CLI
         start_menu
       elsif response == 6
         goodbye
-        return
+        exit
       else
         puts
         puts "Invalid input" 
@@ -136,7 +133,7 @@ class CLI
         start_menu
       elsif response == 8
         goodbye
-        return
+        exit
       else
         puts "Invalid input"
       end
@@ -144,7 +141,6 @@ class CLI
     end
 
     def favecheck(curr_user)
-        binding.pry
         curr_user.list_favorites.length>0
     end
 
@@ -160,8 +156,6 @@ class CLI
     def random_park(curr_user=nil)
       park_view(self.api_communicator.surprising_park, curr_user)
     end
-
-    
 
     def create_account
         puts "------------------------------------------------------------------------"
@@ -202,7 +196,6 @@ class CLI
         code.upcase
     end
     
-
     def find_account (name)
         users=usernames
         if (users.include?(name))
@@ -242,7 +235,6 @@ class CLI
         end
     end
   
-
     def prompt_for_favorite(curr_park, curr_user)
       puts "Would you like to add this location to your favorites? (y/n)"
       response=gets.chomp.downcase
