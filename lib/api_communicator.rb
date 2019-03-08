@@ -78,6 +78,11 @@ class API
         Park.all.map { |park| park.name }
     end
 
+    def surprising_park
+      parks=all_park_names
+      query_park(parks.sample)
+    end
+
     def all_state_names
         names=State.all.map { |state| state.full_name }
     end
@@ -85,6 +90,8 @@ class API
     def all_park_categories
         categories=Park.all.map { |park| park.designation }.uniq.sort
     end
+
+
 
     #park name
     def lenient_name_search(name)
@@ -103,7 +110,7 @@ class API
      results
     end
 
-    
+
     def lenient_state_search(name)
         any_results=false
         while !any_results
@@ -115,7 +122,7 @@ class API
             else
                 puts "No results! Please try another search"
                 name = gets.chomp
-            end    
+            end
         end
         results
     end
@@ -137,5 +144,3 @@ class API
      results.map { |p| p['fullName']}
     end
 end
-
-
