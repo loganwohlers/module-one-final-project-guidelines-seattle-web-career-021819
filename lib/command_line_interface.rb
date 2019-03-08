@@ -14,24 +14,28 @@ class CLI
     end
 
     def welcome
-        puts "Welcome to the National Park Database"
+        greeting_message
+
     end
 
     def goodbye
-      puts "------ EXIT ------"
-      puts "Thank you for coming, please come again."
+      goodbye_message
     end
 
     # MENUS
     def start_menu
+        
       puts
-      puts "------ START MENU ------"
+      puts "------------------------------------------------------------------------"
+      puts "          START MENU"
+      puts "------------------------------------------------------------------------"
       puts "What would you like to do?"
       puts "Creating an account lets you save your favorite parks"
       puts "(Please select a number from the list)"
       puts
       api_communicator.printlist(@@start_menu)
       response = gets.chomp.to_i
+
 
       if response == 1
         sign_in
@@ -50,14 +54,18 @@ class CLI
     end
 
     def search_menu
+        
       puts
-      puts "------ SEARCH MENU ------"
+      puts "------------------------------------------------------------------------"
+      puts "          SEARCH MENU"
+      puts "------------------------------------------------------------------------"
       puts "Search for infomation about National Parks"
       puts "(Please select a number from the list)"
+
       puts
       api_communicator.printlist(@@search_menu)
       response = gets.chomp.to_i
-
+    
       if response == 1
         park_view(search_by_name)
       elsif response == 2
@@ -81,18 +89,22 @@ class CLI
 
     # methods supporting start menu
     def sign_in
-      puts "------ SIGN IN ------"
-      puts "Enter your name"
-      name_response=gets.chomp.downcase
-      puts "OK- pulling up your profile"
-      acct=find_account(name_response)
-      user_search_menu(acct)
+        puts "------------------------------------------------------------------------"
+        puts "          SIGN IN"
+        puts "------------------------------------------------------------------------"
+        puts "Enter your name"
+        name_response=gets.chomp.downcase
+        puts "OK- pulling up your profile"
+        acct=find_account(name_response)
+        user_search_menu(acct)
     end
 
     def user_search_menu(curr_user)
       user_menu = ["Search by Name", "Search by State", "Search by Park Category", "Suprise Me", "Parks In My State", "View my Favorites", "Back to Start Menu", "Exit"]
       puts
-      puts "------ #{curr_user.name.upcase}'S SEARCH MENU ------"
+      puts "------------------------------------------------------------------------"
+      puts "          #{curr_user.name.upcase}'S SEARCH MENU"
+      puts "------------------------------------------------------------------------"
       puts "Search for infomation about National Parks"
       puts "(Please select a number from the list)"
       puts
@@ -111,7 +123,6 @@ class CLI
          park_view(parks_in_state(curr_user.state), curr_user)
       elsif response == 6
         if favecheck(curr_user)
-            binding.pry
             #if favecheck (a test to see if list of favorites has at least 1 entry) returns true
             #view their favorites and select one 
             #this is getting the one park they select from their favorites and viewing it w/ a special method(favorite view- that won't re-prompt them to add it to favorties)
@@ -125,15 +136,18 @@ class CLI
         start_menu
       elsif response == 8
         goodbye
-        return nil
+        return
       else
         puts "Invalid input"
-        user_search_menu(curr_user)
       end
+      user_search_menu(curr_user)
     end
 
     def favorite_view (curr_park, curr_user)
-        puts "------ #{curr_park.name.upcase} ------"
+        mountain_art
+        puts "------------------------------------------------------------------------"
+        puts "          #{curr_park.name.upcase}"
+        puts "------------------------------------------------------------------------"
         puts curr_park
         user_search_menu(curr_user)
     end
@@ -147,10 +161,13 @@ class CLI
     end
 
     def create_account
-      puts "------ CREATE ACCOUNT ------"
-      puts "Enter your name"
-      name=gets.chomp.capitalize
-      make_acct(name)
+        puts "------------------------------------------------------------------------"
+        puts "          CREATE ACCOUNT"
+        puts "------------------------------------------------------------------------"
+        puts "Enter your name"
+    
+        name=gets.chomp.capitalize
+        make_acct(name)
     end
 
     def make_acct(name)
@@ -207,14 +224,18 @@ class CLI
     end
 
     def park_view (curr_park, curr_user=nil)
-        puts "------ #{curr_park.name.upcase} ------"
+        mountain_art
+        puts "------------------------------------------------------------------------"
+        puts "          #{curr_park.name.upcase}"
+        puts "------------------------------------------------------------------------"
         puts curr_park
 
         if curr_user
             prompt_for_favorite(curr_park, curr_user)
         else
             puts 
-            puts "Sign in to be able to save favorite parks!"
+            puts " *** Sign in to be able to save favorite parks!"
+            puts "------------------------------------------------------------------------"
         end
     end
   
@@ -224,7 +245,6 @@ class CLI
       response=gets.chomp.downcase
       if response== 'y' || response=='yes'
         curr_user.add_favorite(curr_park)
-        # binding.pry
       else
         puts
         puts "Ok you can always favorite another time!"

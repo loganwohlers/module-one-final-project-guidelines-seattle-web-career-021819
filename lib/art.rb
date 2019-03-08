@@ -24,6 +24,11 @@ puts "       C  CCCCC                                         CCCCCCC"
 puts "        C CCC                C  C                         CCC"
 puts "          CCC                 CC                          CCC"
 puts "----------CCC-----------------CC--------------------------CCC-------------"
+puts
+puts
+puts
+puts
+
 end
 
 def goodbye_message
@@ -63,5 +68,4 @@ def mountain_art
   puts "        V             V  V     V                       V       V"
   puts "       V               V        V                     V         V"
   puts "      V                 V        V                   V           V"
-  puts "------------------------------------------------------------------------"
 end
