@@ -41,8 +41,11 @@ class CLI
         search_menu
       elsif response == 4
         goodbye
+        return
       else
+        puts
         puts "Invalid input"
+        start_menu
       end
     end
 
@@ -56,20 +59,24 @@ class CLI
       response = gets.chomp.to_i
 
       if response == 1
-        search_by_name
+        park_view(search_by_name)
       elsif response == 2
-        search_by_state
+        park_view(search_by_state)
       elsif response == 3
-        search_by_type
+        park_view(search_by_type)
       elsif response == 4
-        puts "this is where random will go"
+        random_park
       elsif response == 5
         start_menu
       elsif response == 6
         goodbye
+        return
       else
-        puts "Invalid input"
+        puts
+        puts "Invalid input" 
       end
+      search_menu
+
     end
 
     # methods supporting start menu
@@ -78,7 +85,8 @@ class CLI
       puts "Enter your name"
       name_response=gets.chomp.downcase
       puts "OK- pulling up your profile"
-      user_search_menu(find_account(name_response))
+      acct=find_account(name_response)
+      user_search_menu(acct)
     end
 
     def user_search_menu(curr_user)
@@ -97,22 +105,33 @@ class CLI
       elsif response == 3
         park_view(search_by_type, curr_user)
       elsif response == 4
-         random_park(curr_user)
+         random_park
+         user_search_menu(curr_user)
       elsif response == 5
-          #parks in my state
+         park_view(parks_in_state(curr_user.state), curr_user)
       elsif response == 6
-           #view my favorites
+        favecheck(curr_user)
+        favorite_view(self.api_communicator.query_park(array_selector(curr_user.list_favorites)),curr_user)
       elsif response == 7
         start_menu
       elsif response == 8
         goodbye
       else
         puts "Invalid input"
+
       end
     end
 
     def random_park(curr_user=nil)
       park_view(self.api_communicator.surprising_park, curr_user)
+    end
+
+    def favecheck(curr_user)
+        faves=curr_user.list_favorites
+        if faves.length<=0
+            puts "You have no favorites!"
+            return nil
+        end
     end
 
     def create_account
@@ -125,8 +144,10 @@ class CLI
     def make_acct(name)
         puts "Please enter state code of where you live (ie 'WA', 'OR')"
         state=gets.chomp.upcase
+        # self.api_communicator.lenient_state_search(state)
+        #can break here w/ an invalid state
         state_row=self.api_communicator.query_state(state)
-        acct=User.create(name: name)
+        acct=User.find_or_create_by(name: name)
         state_row.users << acct
         puts "Here is your profile:"
         p acct
@@ -139,7 +160,13 @@ class CLI
             a= User.find_by(name: name.capitalize)
             return a
         else
-            puts "Couldn't find you!"
+            puts "Couldn't find you!- please try again- or press 2 to create acct"
+            response=gets.chomp.downcase
+            if response.to_i==2
+                user_search_menu(create_account)
+            else
+                find_account(response)
+            end
         end
     end
 
@@ -157,6 +184,12 @@ class CLI
       if curr_user
         prompt_for_favorite(curr_park, curr_user)
       end
+    end
+
+    def favorite_view (curr_park, curr_user)
+        puts "------ #{curr_park.name.upcase} ------"
+        puts curr_park
+        user_search_menu(curr_user)
     end
 
     def prompt_for_favorite(curr_park, curr_user)
@@ -190,8 +223,6 @@ class CLI
         results=self.api_communicator.lenient_state_search(response)
         curr_state=self.api_communicator.query_state(array_selector(results))
         parks_in_state(curr_state)
-        # states_parks=curr_state.parks.map { |e| e.name }
-        # p self.api_communicator.query_park(array_selector(states_parks))
     end
 
     def search_by_type

@@ -6,7 +6,7 @@ Favorite.destroy_all
 Park.destroy_all
 StatePark.destroy_all
 State.destroy_all
-User.destroy_all
+# User.destroy_all
 
 #we call on our all_parks method once and save the resulting array as opposed to calling on the api multiple times
 ALL_PARKS=api.all_parks
@@ -34,11 +34,16 @@ ALL_STATES.each do |state|
     State.create(abbreviation: state, full_name: state_code_conversion.key(state))
 end
 
-# #user
-u1 = User.create(name: "Unknown User")
-u2 = User.create(name: "Ellen")
+# wa=State.find_by(abbreviation: 'WA')
+# wa.users << u1
+# wa.users << u2
+# # #user
+# u1 = User.create(name: "Unknown User")
+# u2 = User.create(name: "Ellen")
 
 #Seeding all state/park join table via state_parks method from api_comm file
 api.state_parks(ALL_PARKS)
+
+
 
 binding.pry
