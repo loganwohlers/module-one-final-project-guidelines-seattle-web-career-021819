@@ -114,6 +114,7 @@ class CLI
             binding.pry
             #if favecheck (a test to see if list of favorites has at least 1 entry) returns true
             #view their favorites and select one 
+            #this is getting the one park they select from their favorites and viewing it w/ a special method(favorite view- that won't re-prompt them to add it to favorties)
             favorite_view(self.api_communicator.query_park(array_selector(curr_user.list_favorites)),curr_user)
         else 
             #they have no favorites if they get to this point- then re-sends them to user menu 
@@ -223,7 +224,7 @@ class CLI
       response=gets.chomp.downcase
       if response== 'y' || response=='yes'
         curr_user.add_favorite(curr_park)
-        binding.pry
+        # binding.pry
       else
         puts
         puts "Ok you can always favorite another time!"
