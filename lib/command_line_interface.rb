@@ -105,22 +105,36 @@ class CLI
       elsif response == 3
         park_view(search_by_type, curr_user)
       elsif response == 4
-         random_park
+         random_park(curr_user)
          user_search_menu(curr_user)
       elsif response == 5
          park_view(parks_in_state(curr_user.state), curr_user)
       elsif response == 6
-        favecheck(curr_user)
-        favorite_view(self.api_communicator.query_park(array_selector(curr_user.list_favorites)),curr_user)
+        if favecheck(curr_user)
+            binding.pry
+            #if favecheck (a test to see if list of favorites has at least 1 entry) returns true
+            #view their favorites and select one 
+            favorite_view(self.api_communicator.query_park(array_selector(curr_user.list_favorites)),curr_user)
+        else 
+            #they have no favorites if they get to this point- then re-sends them to user menu 
+            puts "You have no favorites!  You need to add some!"
+            user_search_menu(curr_user)
+        end
       elsif response == 7
         start_menu
       elsif response == 8
         goodbye
-        return
+        return nil
       else
         puts "Invalid input"
         user_search_menu(curr_user)
       end
+    end
+
+    def favorite_view (curr_park, curr_user)
+        puts "------ #{curr_park.name.upcase} ------"
+        puts curr_park
+        user_search_menu(curr_user)
     end
 
     def random_park(curr_user=nil)
@@ -128,11 +142,7 @@ class CLI
     end
 
     def favecheck(curr_user)
-        faves=curr_user.list_favorites
-        if faves.length<=0
-            puts "You have no favorites!"
-            return nil
-        end
+      curr_user.list_favorites.length>0
     end
 
     def create_account
@@ -145,23 +155,32 @@ class CLI
     def make_acct(name)
         puts "Please enter state code of where you live (ie 'WA', 'OR')"
         #loop
-        state=gets.chomp.upcase
-        #IF their input is actually a valid state code
-        # abbreviations=State.all.map do |s|
-        #     s.abbreviation
-        # end
-        # if !(abbreviations.include?(state))
-        #     puts "please re-enter state code"
-        # end
-            #can break here w/ an invalid state
-            state_row=self.api_communicator.query_state(state)
-            acct=User.find_or_create_by(name: name)
-            state_row.users << acct
-            puts "Here is your profile:"
-            p acct
-            acct
+        response=gets.chomp.upcase
+        state=state_code_check(response)
+        state_row=self.api_communicator.query_state(state)
+        acct=User.find_or_create_by(name: name)
+        state_row.users << acct
+        puts "Acct Creation Succesful"
+        acct
         
     end
+
+    def state_code_check(code)
+        valid=false
+        abbreviations=State.all.map do |s|
+            s.abbreviation
+        end
+        while !valid
+            if abbreviations.include?(code.upcase)
+                valid=true    
+            else 
+                puts "Invalid code- please re-enter"
+                code=gets.chomp.upcase
+            end
+        end
+        code.upcase
+    end
+    
 
     def find_account (name)
         users=usernames
@@ -187,25 +206,24 @@ class CLI
     end
 
     def park_view (curr_park, curr_user=nil)
-      puts "------ #{curr_park.name.upcase} ------"
-      puts curr_park
-
-      if curr_user
-        prompt_for_favorite(curr_park, curr_user)
-      end
-    end
-
-    def favorite_view (curr_park, curr_user)
         puts "------ #{curr_park.name.upcase} ------"
         puts curr_park
-        user_search_menu(curr_user)
+
+        if curr_user
+            prompt_for_favorite(curr_park, curr_user)
+        else
+            puts 
+            puts "Sign in to be able to save favorite parks!"
+        end
     end
+  
 
     def prompt_for_favorite(curr_park, curr_user)
       puts "Would you like to add this location to your favorites? (y/n)"
       response=gets.chomp.downcase
       if response== 'y' || response=='yes'
         curr_user.add_favorite(curr_park)
+        binding.pry
       else
         puts
         puts "Ok you can always favorite another time!"
@@ -218,12 +236,12 @@ class CLI
         puts "Please enter the name of a national park"
         response=gets.chomp
         results=self.api_communicator.lenient_name_search(response)
-        p self.api_communicator.query_park(array_selector(results))
+        self.api_communicator.query_park(array_selector(results))
     end
 
     def parks_in_state(state)
         states_parks=state.parks.map { |e| e.name }
-        p self.api_communicator.query_park(array_selector(states_parks))
+        self.api_communicator.query_park(array_selector(states_parks))
     end
 
     def search_by_state
@@ -239,7 +257,7 @@ class CLI
         types=['National Park', 'Historic', 'Monument', 'Preserve', 'Memorial', 'River', 'Battlefield', 'Trail', 'Recreation']
         response=array_selector(types)
         results=self.api_communicator.lenient_type_search(response)
-        p self.api_communicator.query_park(array_selector(results))
+        self.api_communicator.query_park(array_selector(results))
     end
 
     def array_selector(arr)
@@ -248,6 +266,7 @@ class CLI
         num = gets.chomp.to_i
         selection=arr[num-1]
         puts "You've chosen #{selection}"
+        puts
         selection
     end
 

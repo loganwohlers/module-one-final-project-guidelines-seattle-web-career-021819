@@ -5,14 +5,12 @@ class User < ActiveRecord::Base
 
     #user can add favorites (based on which park they are looking at/choose)
     def add_favorite(park)
-        #what happens when they try to dupe favorites
-        fave=Favorite.find_or_create_by(user_id: self.id, park_id:park.id)
+        Favorite.find_or_create_by(user_id: self.id, park_id: park.id)
     end
 
     def list_favorites
       self.favorites.map do |f|
         Park.find(f.park_id).name
       end
-
     end
  end
