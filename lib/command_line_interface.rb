@@ -143,6 +143,11 @@ class CLI
       user_search_menu(curr_user)
     end
 
+    def favecheck(curr_user)
+        binding.pry
+        curr_user.list_favorites.length>0
+    end
+
     def favorite_view (curr_park, curr_user)
         mountain_art
         puts "------------------------------------------------------------------------"
@@ -156,9 +161,7 @@ class CLI
       park_view(self.api_communicator.surprising_park, curr_user)
     end
 
-    def favecheck(curr_user)
-      curr_user.list_favorites.length>0
-    end
+    
 
     def create_account
         puts "------------------------------------------------------------------------"

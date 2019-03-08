@@ -5,7 +5,9 @@ class User < ActiveRecord::Base
 
     #user can add favorites (based on which park they are looking at/choose)
     def add_favorite(park)
-          Favorite.create(user_id: self.id, park_id: park.id)
+        a=Favorite.create(user_id: self.id, park_id: park.id)
+        self.favorites << a
+        park.favorites << a
     end
 
     def list_favorites
