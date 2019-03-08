@@ -116,9 +116,10 @@ class CLI
         start_menu
       elsif response == 8
         goodbye
+        return
       else
         puts "Invalid input"
-
+        user_search_menu(curr_user)
       end
     end
 
@@ -137,21 +138,29 @@ class CLI
     def create_account
       puts "------ CREATE ACCOUNT ------"
       puts "Enter your name"
-      name=gets.chomp.downcase
+      name=gets.chomp.capitalize
       make_acct(name)
     end
 
     def make_acct(name)
         puts "Please enter state code of where you live (ie 'WA', 'OR')"
+        #loop
         state=gets.chomp.upcase
-        # self.api_communicator.lenient_state_search(state)
-        #can break here w/ an invalid state
-        state_row=self.api_communicator.query_state(state)
-        acct=User.find_or_create_by(name: name)
-        state_row.users << acct
-        puts "Here is your profile:"
-        p acct
-        acct
+        #IF their input is actually a valid state code
+        # abbreviations=State.all.map do |s|
+        #     s.abbreviation
+        # end
+        # if !(abbreviations.include?(state))
+        #     puts "please re-enter state code"
+        # end
+            #can break here w/ an invalid state
+            state_row=self.api_communicator.query_state(state)
+            acct=User.find_or_create_by(name: name)
+            state_row.users << acct
+            puts "Here is your profile:"
+            p acct
+            acct
+        
     end
 
     def find_account (name)
