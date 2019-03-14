@@ -2,16 +2,8 @@
 require_relative "../config/environment.rb"
 
 class API
-  # TODO: make this a constant instead of a class variable
-  @@state_code_conversion = YAML.load_file('state_codes.yml')
-  KEY=NPS_API_KEY #USER ENTERS Key saved from bash profile
 
-  #helper method to print out any array as a numbered list
-  def printlist(arr)
-    arr.each_with_index do |h, index|
-      puts "#{index+1}. #{h}"
-    end
-  end
+  KEY=NPS_API_KEY #USER ENTERS Key saved from bash profile
 
   #Goes into API- and grabs data for ALL parks and returns them as an array of hashes
   def all_parks
@@ -48,14 +40,14 @@ class API
       if p['states'].length > 2
         multi=p['states'].split(",")
         multi.each do |state|
-          this_state = query_state(state)
+          this_state = DBCommunicator.query_state(state)
           sp=StatePark.create
           this_state.state_parks << sp
           this_park.state_parks << sp
         end
       else
         # grab state and park object and assigning to new variable
-        this_state = query_state(p["states"])
+        this_state = DBCommunicator.query_state(p["states"])
         sp=StatePark.create
         this_state.state_parks << sp
         this_park.state_parks << sp
@@ -63,82 +55,4 @@ class API
     end
   end
 
-  #finds state in the db by abbreviation
-  def query_state(state)
-    State.find_by(abbreviation: state)
-  end
-
-  #finds park in the db by abbreviation
-  def query_park(park)
-    Park.find_by(name: park)
-  end
-
-  def all_park_names
-    Park.all.map { |park| park.name }
-  end
-
-  def surprising_park
-    parks=all_park_names
-    query_park(parks.sample)
-  end
-
-  def all_state_names
-    names=State.all.map { |state| state.full_name }
-  end
-
-  def all_park_categories
-    categories=Park.all.map { |park| park.designation }.uniq.sort
-  end
-
-  #park name
-  # TODO: figure out why it says "park name"
-  def lenient_name_search(name)
-    any_results=false
-    while !any_results
-      results=all_park_names.select do |n|
-        n.downcase.include?(name.downcase)
-      end
-      if results.length>0
-        any_results=true
-      else
-        puts "No results! Please try another search"
-        name = gets.chomp
-      end
-    end
-    results
-  end
-
-  def lenient_state_search(name)
-    any_results=false
-    while !any_results
-      results= @@state_code_conversion.select do |k,v|
-        k.downcase.include?(name.downcase) ||  v.downcase.include?(name.downcase)
-      end.to_a
-      if results.length>0
-        any_results=true
-      else
-        puts "No results! Please try another search"
-        name = gets.chomp
-      end
-    end
-    results
-  end
-
-  #park name
-  # TODO: figure out why it says "park name"
-  def lenient_type_search(name)
-    any_results=false
-    while !any_results
-      results=all_parks.select do |park|
-        park['designation'].downcase.include?(name.downcase)
-      end
-      if results.length>0
-        any_results=true
-      else
-        puts "No results! Please try another search"
-        name = gets.chomp
-      end
-    end
-    results.map { |p| p['fullName']}
-  end
 end

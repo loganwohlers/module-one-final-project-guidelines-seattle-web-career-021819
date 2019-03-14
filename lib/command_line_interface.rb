@@ -17,6 +17,13 @@ class CLI
     HEADING
   end
 
+  #helper method to print out any array as a numbered list
+  def printlist(arr)
+    arr.each_with_index do |h, index|
+      puts "#{index+1}. #{h}"
+    end
+  end
+
   # TODO: figure out if this method is actually used; delete if not
   def run_search
     welcome
@@ -24,13 +31,11 @@ class CLI
   end
 
   def welcome
-    # TODO: wrap this in a module so it's clearer where it's coming from
-    greeting_message
+    Art.greeting_message
   end
 
   def goodbye
-    # TODO: wrap this in a module so it's clearer where it's coming from
-    goodbye_message
+    Art.goodbye_message
   end
 
   # MENUS
@@ -42,8 +47,7 @@ class CLI
     (Please select a number from the list)
 
     START_MENU
-    # TODO: determine if this should be in CLI rather than API communicator
-    api_communicator.printlist(@@start_menu)
+    printlist(@@start_menu)
     response = gets.chomp.to_i
 
     if response == 1
@@ -70,8 +74,7 @@ class CLI
     (Please select a number from the list)
 
     SEARCH_MENU
-    # TODO: determine if this should be in CLI rather than API communicator
-    api_communicator.printlist(@@search_menu)
+    printlist(@@search_menu)
     response = gets.chomp.to_i
 
     if response == 1
@@ -115,7 +118,7 @@ class CLI
     (Please select a number from the list)
 
     SEARCH_MENU
-    api_communicator.printlist(user_menu)
+    printlist(user_menu)
     response = gets.chomp.to_i
     if response == 1
       # TODO: update this to make control flow clearer
@@ -139,7 +142,7 @@ class CLI
         #if favecheck (a test to see if list of favorites has at least 1 entry) returns true
         #view their favorites and select one
         #this is getting the one park they select from their favorites and viewing it w/ a special method(favorite view- that won't re-prompt them to add it to favorties)
-        favorite_view(self.api_communicator.query_park(array_selector(curr_user.list_favorites)),curr_user)
+        favorite_view(DBCommunicator.query_park(array_selector(curr_user.list_favorites)),curr_user)
       else
         #they have no favorites if they get to this point- then re-sends them to user menu
         puts "You have no favorites!  You need to add some!"
@@ -161,16 +164,14 @@ class CLI
   end
 
   def favorite_view (curr_park, curr_user)
-    # TODO: wrap this in a module so it's clearer where it's coming from
-    mountain_art
+    Art.mountain_art
     display_heading(curr_park.name)
     puts curr_park
     user_search_menu(curr_user)
   end
 
   def random_park(curr_user=nil)
-    # TODO: determine if this should be in CLI rather than API communicator
-    park_view(self.api_communicator.surprising_park, curr_user)
+    park_view(DBCommunicator.surprising_park, curr_user)
   end
 
   def create_account
@@ -187,7 +188,7 @@ class CLI
     # TODO: figure out why this ^ says "loop"
     response=gets.chomp.upcase
     state=state_code_check(response)
-    state_row=self.api_communicator.query_state(state)
+    state_row=DBCommunicator.query_state(state)
     acct=User.find_or_create_by(name: name)
     state_row.users << acct
     puts "Acct Creation Succesful"
@@ -236,8 +237,7 @@ class CLI
   end
 
   def park_view (curr_park, curr_user=nil)
-    # TODO: wrap this in a module so it's clearer where it's coming from
-    mountain_art
+    Art.mountain_art
     display_heading(curr_park.name)
     puts curr_park
 
@@ -265,24 +265,21 @@ class CLI
   def search_by_name
     puts "Please enter the name of a national park"
     response=gets.chomp
-    # TODO: determine if this should be in CLI rather than API communicator
-    results=self.api_communicator.lenient_name_search(response)
-    self.api_communicator.query_park(array_selector(results))
+    results=DBCommunicator.lenient_name_search(response)
+    DBCommunicator.query_park(array_selector(results))
   end
 
   def parks_in_state(state)
     # TODO: use ActiveRecord to perform this query
     states_parks=state.parks.map { |e| e.name }
-    # TODO: determine if this should be in CLI rather than API communicator
-    self.api_communicator.query_park(array_selector(states_parks))
+    DBCommunicator.query_park(array_selector(states_parks))
   end
 
   def search_by_state
     puts "Please enter a state"
     response=gets.chomp
-    # TODO: determine if this should be in CLI rather than API communicator
-    results=self.api_communicator.lenient_state_search(response)
-    curr_state=self.api_communicator.query_state(array_selector(results))
+    results=DBCommunicator.lenient_state_search(response)
+    curr_state=DBCommunicator.query_state(array_selector(results))
     parks_in_state(curr_state)
   end
 
@@ -290,14 +287,12 @@ class CLI
     puts "Please select a type of park from below"
     types=['National Park', 'Historic', 'Monument', 'Preserve', 'Memorial', 'River', 'Battlefield', 'Trail', 'Recreation']
     response=array_selector(types)
-    # TODO: determine if this should be in CLI rather than API communicator
-    results=self.api_communicator.lenient_type_search(response)
-    self.api_communicator.query_park(array_selector(results))
+    results=DBCommunicator.lenient_type_search(response)
+    DBCommunicator.query_park(array_selector(results))
   end
 
   def array_selector(arr)
-    # TODO: determine if this should be in CLI rather than API communicator
-    api_communicator.printlist(arr)
+    printlist(arr)
     # TODO: display a message if input is invalid
     puts "Pick a number to confirm selection"
     num = gets.chomp.to_i
