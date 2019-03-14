@@ -1,4 +1,5 @@
 def greeting_message
+# TODO: make this a multi-line string
 puts
 puts
 puts "FFFFF   II   NN    NN   DDD        TTTTTTTT   HH  HH       AA     TTTTTTTT"
@@ -32,6 +33,7 @@ puts
 end
 
 def goodbye_message
+# TODO: make this a multi-line string
 puts
 puts
 puts "    GGGGG      OOO       OOO     DDD      BBB    YY     YY   EEEEE"
@@ -61,6 +63,7 @@ puts
 end
 
 def mountain_art
+# TODO: make this a multi-line string
   puts
   puts "            VVVVVV                      0000               V"
   puts "          V        V        V          000000            V   V"

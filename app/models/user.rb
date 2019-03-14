@@ -3,6 +3,7 @@ class User < ActiveRecord::Base
     has_many :favorites
     has_many :parks, through: :favorites
 
+    # TODO: remove stuff that isn't necessary because of ActiveRecord
     #user can add favorites (based on which park they are looking at/choose)
     def add_favorite(park)
         a=Favorite.create(user_id: self.id, park_id: park.id)
