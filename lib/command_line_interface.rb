@@ -8,6 +8,15 @@ class CLI
     @api_communicator=api_communicator # connects to API class
   end
 
+  def display_heading(text)
+    puts <<~HEADING
+
+    ------------------------------------------------------------------------
+    #{text.upcase.center(72)}
+    ------------------------------------------------------------------------
+    HEADING
+  end
+
   # TODO: figure out if this method is actually used; delete if not
   def run_search
     welcome
@@ -26,18 +35,13 @@ class CLI
 
   # MENUS
   def start_menu
+    display_heading("start menu")
+    puts <<~START_MENU
+    What would you like to do?
+    Creating an account lets you save your favorite parks
+    (Please select a number from the list)
 
-    # TODO: make a method that displays a heading between two lines
-    puts
-    puts "------------------------------------------------------------------------"
-    puts "          START MENU"
-    puts "------------------------------------------------------------------------"
-    # TODO: make this a multi-line string
-    puts "What would you like to do?"
-    puts "Creating an account lets you save your favorite parks"
-    puts "(Please select a number from the list)"
-    puts
-
+    START_MENU
     # TODO: determine if this should be in CLI rather than API communicator
     api_communicator.printlist(@@start_menu)
     response = gets.chomp.to_i
@@ -60,16 +64,12 @@ class CLI
   end
 
   def search_menu
-    # TODO: make a method that displays a heading between two lines
-    puts
-    puts "------------------------------------------------------------------------"
-    puts "          SEARCH MENU"
-    puts "------------------------------------------------------------------------"
-    # TODO: make this a multi-line string
-    puts "Search for infomation about National Parks"
-    puts "(Please select a number from the list)"
+    display_heading("search menu")
+    puts <<~SEARCH_MENU
+    Search for infomation about National Parks
+    (Please select a number from the list)
 
-    puts
+    SEARCH_MENU
     # TODO: determine if this should be in CLI rather than API communicator
     api_communicator.printlist(@@search_menu)
     response = gets.chomp.to_i
@@ -99,10 +99,7 @@ class CLI
 
   # methods supporting start menu
   def sign_in
-    # TODO: make a method that displays a heading between two lines
-    puts "------------------------------------------------------------------------"
-    puts "          SIGN IN"
-    puts "------------------------------------------------------------------------"
+    display_heading("sign in")
     puts "Enter your name"
     name_response=gets.chomp.downcase
     puts "OK- pulling up your profile"
@@ -112,14 +109,12 @@ class CLI
 
   def user_search_menu(curr_user)
     user_menu = ["Search by Name", "Search by State", "Search by Park Category", "Suprise Me", "Parks In My State", "View my Favorites", "Back to Start Menu", "Exit"]
-    # TODO: make a method that displays a heading between two lines
-    puts
-    puts "------------------------------------------------------------------------"
-    puts "          #{curr_user.name.upcase}'S SEARCH MENU"
-    puts "------------------------------------------------------------------------"
-    puts "Search for infomation about National Parks"
-    puts "(Please select a number from the list)"
-    puts
+    display_heading("#{curr_user.name}'s search menu")
+    puts <<~SEARCH_MENU
+    Search for infomation about National Parks
+    (Please select a number from the list)
+
+    SEARCH_MENU
     api_communicator.printlist(user_menu)
     response = gets.chomp.to_i
     if response == 1
@@ -168,10 +163,7 @@ class CLI
   def favorite_view (curr_park, curr_user)
     # TODO: wrap this in a module so it's clearer where it's coming from
     mountain_art
-    # TODO: make a method that displays a heading between two lines
-    puts "------------------------------------------------------------------------"
-    puts "          #{curr_park.name.upcase}"
-    puts "------------------------------------------------------------------------"
+    display_heading(curr_park.name)
     puts curr_park
     user_search_menu(curr_user)
   end
@@ -182,10 +174,7 @@ class CLI
   end
 
   def create_account
-    # TODO: make a method that displays a heading between two lines
-    puts "------------------------------------------------------------------------"
-    puts "          CREATE ACCOUNT"
-    puts "------------------------------------------------------------------------"
+    display_heading("create account")
     puts "Enter your name"
 
     name=gets.chomp.capitalize
@@ -249,10 +238,7 @@ class CLI
   def park_view (curr_park, curr_user=nil)
     # TODO: wrap this in a module so it's clearer where it's coming from
     mountain_art
-    # TODO: make a method that displays a heading between two lines
-    puts "------------------------------------------------------------------------"
-    puts "          #{curr_park.name.upcase}"
-    puts "------------------------------------------------------------------------"
+    display_heading(curr_park.name)
     puts curr_park
 
     if curr_user

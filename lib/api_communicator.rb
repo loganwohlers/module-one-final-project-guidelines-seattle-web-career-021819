@@ -5,7 +5,6 @@ class API
   # TODO: make this a constant instead of a class variable
   @@state_code_conversion = YAML.load_file('state_codes.yml')
   KEY=NPS_API_KEY #USER ENTERS Key saved from bash profile
-  BASE_URL='nps.gov/api/v1'
 
   #helper method to print out any array as a numbered list
   def printlist(arr)
@@ -16,8 +15,7 @@ class API
 
   #Goes into API- and grabs data for ALL parks and returns them as an array of hashes
   def all_parks
-    # TODO: convert this to string interpolation
-    response_string = RestClient.get('https://' + KEY + '@developer.' + BASE_URL + '/parks?limit=1000')
+    response_string = RestClient.get("https://developer.nps.gov/api/v1/parks?api_key=#{KEY}&limit=1000")
     query_hash_to_array(response_string)
   end
 
