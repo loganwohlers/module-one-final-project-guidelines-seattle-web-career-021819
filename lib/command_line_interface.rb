@@ -1,12 +1,13 @@
 class CLI
   attr_reader :api_communicator
-  # TODO: make these into constants rather than class variables
-  @@start_menu = ["Sign In", "Create Account", "Search without Account", "Exit"]
-  @@search_menu = ["Search by Name", "Search by State", "Search by Park Category", "Suprise Me", "Back to Start Menu", "Exit"]
+  attr_accessor :current_user
 
   def initialize (api_communicator)
     @api_communicator=api_communicator # connects to API class
+    @current_user=nil
   end
+
+  ################# helper methods for class as a whole ########################
 
   def display_heading(text)
     puts <<~HEADING
@@ -24,154 +25,104 @@ class CLI
     end
   end
 
-  # TODO: figure out if this method is actually used; delete if not
-  def run_search
-    welcome
-    start_menu
+  def array_selector(arr)
+    printlist(arr)
+    # TODO: display a message if input is invalid
+    puts "Pick a number to confirm selection"
+    num = gets.chomp.to_i
+    selection=arr[num-1]
+    puts "You've chosen #{selection}"
+    puts
+    selection
   end
+
+  ########## methods invoked by run: welcome, start_menu, and goodbye ##########
 
   def welcome
     Art.greeting_message
+  end
+
+  def start_menu
+    start_menu_keep_going = true
+    while start_menu_keep_going
+
+      display_heading("start menu")
+      puts <<~START_MENU
+      What would you like to do?
+      Creating an account lets you save your favorite parks
+      (Please select a number from the list)
+
+      START_MENU
+
+      start_menu_items = [
+        "Sign In",
+        "Create Account",
+        "Search without Account",
+        "Exit"
+      ]
+      printlist(start_menu_items)
+
+      response = gets.chomp.to_i
+      while !response.between?(1,4)
+        puts "Please select a valid option:"
+        printlist(start_menu_items)
+        response = gets.chomp.to_i
+      end
+
+      case response
+      when 1
+        sign_in
+        start_menu_keep_going = user_search_menu
+      when 2
+        create_account
+        start_menu_keep_going = user_search_menu
+      when 3
+        self.current_user = nil
+        start_menu_keep_going = search_menu
+      when 4
+        start_menu_keep_going = false
+      end
+    end
   end
 
   def goodbye
     Art.goodbye_message
   end
 
-  # MENUS
-  def start_menu
-    display_heading("start menu")
-    puts <<~START_MENU
-    What would you like to do?
-    Creating an account lets you save your favorite parks
-    (Please select a number from the list)
+  ################# methods for signing in and signing up ######################
 
-    START_MENU
-    printlist(@@start_menu)
-    response = gets.chomp.to_i
-
-    if response == 1
-      sign_in
-    elsif response == 2
-      # TODO: update this to make control flow clearer
-      # (right now it is calling create_account, then passing the result into user_search_menu)
-      user_search_menu(create_account)
-    elsif response == 3
-      search_menu
-    elsif response == 4
-      goodbye
-    else
-      puts
-      puts "Invalid input"
-      start_menu
-    end
-  end
-
-  def search_menu
-    display_heading("search menu")
-    puts <<~SEARCH_MENU
-    Search for infomation about National Parks
-    (Please select a number from the list)
-
-    SEARCH_MENU
-    printlist(@@search_menu)
-    response = gets.chomp.to_i
-
-    if response == 1
-      # TODO: update this to make control flow clearer
-      park_view(search_by_name)
-    elsif response == 2
-      # TODO: update this to make control flow clearer
-      park_view(search_by_state)
-    elsif response == 3
-      # TODO: update this to make control flow clearer
-      park_view(search_by_type)
-    elsif response == 4
-      random_park
-    elsif response == 5
-      start_menu
-    elsif response == 6
-      goodbye
-      exit
-    else
-      puts
-      puts "Invalid input"
-    end
-    search_menu
-  end
-
-  # methods supporting start menu
   def sign_in
     display_heading("sign in")
     puts "Enter your name"
     name_response=gets.chomp.downcase
     puts "OK- pulling up your profile"
-    acct=find_account(name_response)
-    user_search_menu(acct)
+    find_account(name_response)
   end
 
-  def user_search_menu(curr_user)
-    user_menu = ["Search by Name", "Search by State", "Search by Park Category", "Suprise Me", "Parks In My State", "View my Favorites", "Back to Start Menu", "Exit"]
-    display_heading("#{curr_user.name}'s search menu")
-    puts <<~SEARCH_MENU
-    Search for infomation about National Parks
-    (Please select a number from the list)
+  def find_account(name)
+    # TODO: use ActiveRecord to check if user exists
+    users=usernames
 
-    SEARCH_MENU
-    printlist(user_menu)
-    response = gets.chomp.to_i
-    if response == 1
-      # TODO: update this to make control flow clearer
-      park_view(search_by_name, curr_user)
-    elsif response == 2
-      # TODO: update this to make control flow clearer
-      park_view(search_by_state, curr_user)
-    elsif response == 3
-      # TODO: update this to make control flow clearer
-      park_view(search_by_type, curr_user)
-    elsif response == 4
-      # TODO: update this to make control flow clearer
-      random_park(curr_user)
-      user_search_menu(curr_user)
-    elsif response == 5
-      # TODO: update this to make control flow clearer
-      park_view(parks_in_state(curr_user.state), curr_user)
-    elsif response == 6
-      # TODO: update this to make control flow clearer
-      if favecheck(curr_user)
-        #if favecheck (a test to see if list of favorites has at least 1 entry) returns true
-        #view their favorites and select one
-        #this is getting the one park they select from their favorites and viewing it w/ a special method(favorite view- that won't re-prompt them to add it to favorties)
-        favorite_view(DBCommunicator.query_park(array_selector(curr_user.list_favorites)),curr_user)
-      else
-        #they have no favorites if they get to this point- then re-sends them to user menu
-        puts "You have no favorites!  You need to add some!"
-        user_search_menu(curr_user)
+    while !users.include?(name)
+      puts "Couldn't find you!- please try again- or press 2 to create acct"
+      name=gets.chomp.downcase
+      if name.to_i==2
+        create_account
+        break
       end
-    elsif response == 7
-      start_menu
-    elsif response == 8
-      goodbye
-      exit
-    else
-      puts "Invalid input"
     end
-    user_search_menu(curr_user)
+
+    # if the user entered "2", create_account set current_user for us
+    if name.to_i != 2
+      self.current_user = User.find_by(name: name.capitalize)
+    end
   end
 
-  def favecheck(curr_user)
-    curr_user.list_favorites.length>0
-  end
-
-  def favorite_view (curr_park, curr_user)
-    Art.mountain_art
-    display_heading(curr_park.name)
-    puts curr_park
-    user_search_menu(curr_user)
-  end
-
-  def random_park(curr_user=nil)
-    park_view(DBCommunicator.surprising_park, curr_user)
+  # Returns all usernames
+  def usernames
+    User.all.map do |u|
+      u.name.downcase
+    end.uniq
   end
 
   def create_account
@@ -184,15 +135,13 @@ class CLI
 
   def make_acct(name)
     puts "Please enter state code of where you live (ie 'WA', 'OR')"
-    #loop
-    # TODO: figure out why this ^ says "loop"
     response=gets.chomp.upcase
+
     state=state_code_check(response)
-    state_row=DBCommunicator.query_state(state)
-    acct=User.find_or_create_by(name: name)
-    state_row.users << acct
+    user = User.create(name: name, state: state)
+    self.current_user = user
+
     puts "Acct Creation Succesful"
-    acct
   end
 
   def state_code_check(code)
@@ -208,71 +157,142 @@ class CLI
         code=gets.chomp.upcase
       end
     end
-    code.upcase
+    State.find_by(abbreviation: code.upcase)
   end
 
-  def find_account (name)
-    # TODO: use ActiveRecord to check if user exists
-    users=usernames
-    if (users.include?(name))
-      a= User.find_by(name: name.capitalize)
-      return a
-    else
-      # TODO: make this a loop to reduce method call depth
-      puts "Couldn't find you!- please try again- or press 2 to create acct"
-      response=gets.chomp.downcase
-      if response.to_i==2
-        user_search_menu(create_account)
-      else
-        find_account(response)
+  ##################### search menu for signed in user #########################
+
+  def user_search_menu
+    user_search_menu_keep_going = true
+    start_menu_keep_going = true
+
+    while user_search_menu_keep_going
+
+      display_heading("#{self.current_user.name}'s search menu")
+      puts <<~SEARCH_MENU
+      Search for infomation about National Parks
+      (Please select a number from the list)
+
+      SEARCH_MENU
+
+      user_menu_items = [
+        "Search by Name",
+        "Search by State",
+        "Search by Park Category",
+        "Suprise Me",
+        "Parks In My State",
+        "View my Favorites",
+        "Back to Start Menu",
+        "Exit"
+      ]
+      printlist(user_menu_items)
+
+      response = gets.chomp.to_i
+      while !response.between?(1,8)
+        puts "Please select a valid option:"
+        printlist(user_menu_items)
+        response = gets.chomp.to_i
       end
+
+      case response
+      when 1
+        park = search_by_name
+        park_view(park)
+      when 2
+        park = search_by_state
+        park_view(park)
+      when 3
+        park = search_by_type
+        park_view(park)
+      when 4
+        park = random_park
+        park_view(park)
+      when 5
+        park = parks_in_state(self.current_user.state)
+        park_view(park)
+      when 6
+        if favecheck
+          park = DBCommunicator.query_park(array_selector(self.current_user.list_favorites))
+          favorite_view(park)
+        else
+          puts "You have no favorites!  You need to add some!"
+        end
+      when 7
+        user_search_menu_keep_going = false
+      when 8
+        user_search_menu_keep_going = false
+        start_menu_keep_going = false
+      end
+
     end
+
+    start_menu_keep_going
   end
 
-  # Returns all usernames
-  def usernames
-    User.all.map do |u|
-      u.name.downcase
-    end.uniq
-  end
+  ################# search menu when user is not signed in #####################
 
-  def park_view (curr_park, curr_user=nil)
-    Art.mountain_art
-    display_heading(curr_park.name)
-    puts curr_park
+  def search_menu
+    search_menu_keep_going = true
+    start_menu_keep_going = true
 
-    if curr_user
-      prompt_for_favorite(curr_park, curr_user)
-    else
-      puts
-      puts " *** Sign in to be able to save favorite parks!"
-      puts "------------------------------------------------------------------------"
+    while search_menu_keep_going
+
+      display_heading("search menu")
+      puts <<~SEARCH_MENU
+      Search for infomation about National Parks
+      (Please select a number from the list)
+
+      SEARCH_MENU
+
+      search_menu_items = [
+        "Search by Name",
+        "Search by State",
+        "Search by Park Category",
+        "Suprise Me",
+        "Back to Start Menu",
+        "Exit"
+      ]
+      printlist(search_menu_items)
+
+      response = gets.chomp.to_i
+      while !response.between?(1,6)
+        puts "Please select a valid option:"
+        printlist(search_menu_items)
+        response = gets.chomp.to_i
+      end
+
+      case response
+      when 1
+        park = search_by_name
+        park_view(park)
+      when 2
+        park = search_by_state
+        park_view(park)
+      when 3
+        park = search_by_type
+        park_view(park)
+      when 4
+        park = random_park
+        park_view(random_park)
+      when 5
+        search_menu_keep_going = false
+      when 6
+        search_menu_keep_going = false
+        start_menu_keep_going = false
+      end
+
     end
+
+    start_menu_keep_going
   end
 
-  def prompt_for_favorite(curr_park, curr_user)
-    puts "Would you like to add this location to your favorites? (y/n)"
-    response=gets.chomp.downcase
-    if response== 'y' || response=='yes'
-      curr_user.add_favorite(curr_park)
-    else
-      puts
-      puts "Ok you can always favorite another time!"
-    end
-    user_search_menu(curr_user)
-  end
+  #################### search helper methods ###################################
 
   def search_by_name
     puts "Please enter the name of a national park"
     response=gets.chomp
     results=DBCommunicator.lenient_name_search(response)
     DBCommunicator.query_park(array_selector(results))
-  end
-
-  def parks_in_state(state)
-    # TODO: use ActiveRecord to perform this query
-    states_parks=state.parks.map { |e| e.name }
-    DBCommunicator.query_park(array_selector(states_parks))
   end
 
   def search_by_state
@@ -283,6 +303,12 @@ class CLI
     parks_in_state(curr_state)
   end
 
+  def parks_in_state(state)
+    # TODO: use ActiveRecord to perform this query
+    states_parks=state.parks.map { |e| e.name }
+    DBCommunicator.query_park(array_selector(states_parks))
+  end
+
   def search_by_type
     puts "Please select a type of park from below"
     types=['National Park', 'Historic', 'Monument', 'Preserve', 'Memorial', 'River', 'Battlefield', 'Trail', 'Recreation']
@@ -291,15 +317,43 @@ class CLI
     DBCommunicator.query_park(array_selector(results))
   end
 
-  def array_selector(arr)
-    printlist(arr)
-    # TODO: display a message if input is invalid
-    puts "Pick a number to confirm selection"
-    num = gets.chomp.to_i
-    selection=arr[num-1]
-    puts "You've chosen #{selection}"
-    puts
-    selection
+  def random_park
+    DBCommunicator.surprising_park
+  end
+
+  def favecheck
+    self.current_user.list_favorites.length>0
+  end
+
+  def favorite_view(curr_park)
+    Art.mountain_art
+    display_heading(curr_park.name)
+    puts curr_park
+  end
+
+  def park_view(curr_park)
+    Art.mountain_art
+    display_heading(curr_park.name)
+    puts curr_park
+
+    if !self.current_user.nil?
+      prompt_for_favorite(curr_park)
+    else
+      puts
+      puts " *** Sign in to be able to save favorite parks!"
+      puts "------------------------------------------------------------------------"
+    end
+  end
+
+  def prompt_for_favorite(curr_park)
+    puts "Would you like to add this location to your favorites? (y/n)"
+    response=gets.chomp.downcase
+    if response== 'y' || response=='yes'
+      self.current_user.add_favorite(curr_park)
+    else
+      puts
+      puts "Ok you can always favorite another time!"
+    end
   end
 
 end
