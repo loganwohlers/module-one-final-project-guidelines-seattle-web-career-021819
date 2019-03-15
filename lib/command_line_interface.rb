@@ -100,29 +100,22 @@ class CLI
   end
 
   def find_account(name)
-    # TODO: use ActiveRecord to check if user exists
-    users=usernames
+    find_account_keep_going = true
 
-    while !users.include?(name)
-      puts "Couldn't find you!- please try again- or press 2 to create acct"
-      name=gets.chomp.downcase
-      if name.to_i==2
-        create_account
-        break
+    while find_account_keep_going
+      if User.where(name: name.capitalize).exists?
+        self.current_user = User.find_by(name: name.capitalize)
+        find_account_keep_going = false
+      else
+        puts "Couldn't find you!- please try again- or press 2 to create acct"
+        name=gets.chomp.downcase
+        if name.to_i==2
+          create_account
+          find_account_keep_going = false
+        end
       end
     end
 
-    # if the user entered "2", create_account set current_user for us
-    if name.to_i != 2
-      self.current_user = User.find_by(name: name.capitalize)
-    end
-  end
-
-  # Returns all usernames
-  def usernames
-    User.all.map do |u|
-      u.name.downcase
-    end.uniq
   end
 
   def create_account
@@ -145,19 +138,16 @@ class CLI
   end
 
   def state_code_check(code)
-    valid=false
-    abbreviations=State.all.map do |s|
-      s.abbreviation
-    end
-    while !valid
-      if abbreviations.include?(code.upcase)
-        valid=true
+    state_code_check_keep_going = true
+    while state_code_check_keep_going
+      if State.where(abbreviation: code).exists?
+        state_code_check_keep_going = false
       else
         puts "Invalid code- please re-enter"
         code=gets.chomp.upcase
       end
     end
-    State.find_by(abbreviation: code.upcase)
+    State.find_by(abbreviation: code)
   end
 
   ##################### search menu for signed in user #########################
@@ -304,7 +294,6 @@ class CLI
   end
 
   def parks_in_state(state)
-    # TODO: use ActiveRecord to perform this query
     states_parks=state.parks.map { |e| e.name }
     DBCommunicator.query_park(array_selector(states_parks))
   end
@@ -322,7 +311,7 @@ class CLI
   end
 
   def favecheck
-    self.current_user.list_favorites.length>0
+    !self.current_user.favorites.empty?
   end
 
   def favorite_view(curr_park)
