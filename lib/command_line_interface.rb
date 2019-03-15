@@ -25,11 +25,19 @@ class CLI
     end
   end
 
+  def loop_until_valid_input(options, num)
+    while !num.between?(1, options.length)
+      puts "Please select a valid option:"
+      printlist(options)
+      num = gets.chomp.to_i
+    end
+    num
+  end
+
   def array_selector(arr)
     printlist(arr)
-    # TODO: display a message if input is invalid
     puts "Pick a number to confirm selection"
-    num = gets.chomp.to_i
+    num = loop_until_valid_input(arr, gets.chomp.to_i)
     selection=arr[num-1]
     puts "You've chosen #{selection}"
     puts
@@ -62,12 +70,7 @@ class CLI
       ]
       printlist(start_menu_items)
 
-      response = gets.chomp.to_i
-      while !response.between?(1,4)
-        puts "Please select a valid option:"
-        printlist(start_menu_items)
-        response = gets.chomp.to_i
-      end
+      response = loop_until_valid_input(start_menu_items, gets.chomp.to_i)
 
       case response
       when 1
@@ -177,12 +180,7 @@ class CLI
       ]
       printlist(user_menu_items)
 
-      response = gets.chomp.to_i
-      while !response.between?(1,8)
-        puts "Please select a valid option:"
-        printlist(user_menu_items)
-        response = gets.chomp.to_i
-      end
+      response = loop_until_valid_input(user_menu_items, gets.chomp.to_i)
 
       case response
       when 1
@@ -203,7 +201,7 @@ class CLI
       when 6
         if favecheck
           park = DBCommunicator.query_park(array_selector(self.current_user.list_favorites))
-          favorite_view(park)
+          park_view(park)
         else
           puts "You have no favorites!  You need to add some!"
         end
@@ -244,12 +242,7 @@ class CLI
       ]
       printlist(search_menu_items)
 
-      response = gets.chomp.to_i
-      while !response.between?(1,6)
-        puts "Please select a valid option:"
-        printlist(search_menu_items)
-        response = gets.chomp.to_i
-      end
+      response = loop_until_valid_input(search_menu_items, gets.chomp.to_i)
 
       case response
       when 1
@@ -314,12 +307,6 @@ class CLI
     !self.current_user.favorites.empty?
   end
 
-  def favorite_view(curr_park)
-    Art.mountain_art
-    display_heading(curr_park.name)
-    puts curr_park
-  end
-
   def park_view(curr_park)
     Art.mountain_art
     display_heading(curr_park.name)
@@ -335,13 +322,26 @@ class CLI
   end
 
   def prompt_for_favorite(curr_park)
-    puts "Would you like to add this location to your favorites? (y/n)"
-    response=gets.chomp.downcase
-    if response== 'y' || response=='yes'
-      self.current_user.add_favorite(curr_park)
+    if !self.current_user.parks.include?(curr_park)
+      puts "Would you like to add this location to your favorites? (y/n)"
+      response=gets.chomp.downcase
+      if response== 'y' || response=='yes'
+        self.current_user.add_favorite(curr_park)
+      else
+        puts
+        puts "Ok you can always favorite another time!"
+      end
     else
-      puts
-      puts "Ok you can always favorite another time!"
+      puts "This park has already been added to your favorites.  Do you want to remove it? (y/n)"
+      response = gets.chomp.downcase
+      if response == "y" || response == "yes"
+        # the "delete" name is somewhat misleading...this removes curr_park from
+        # the user's list of parks, but doesn't delete the park
+        self.current_user.parks.delete(curr_park)
+      else
+        puts
+        puts "Ok you can always remove it another time!"
+      end
     end
   end
 

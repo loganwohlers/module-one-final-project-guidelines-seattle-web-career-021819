@@ -18,7 +18,7 @@ module Art
                       PP     AA      AA   RR   RR   KK   KK
 
 
-              Powered by Data From the National Parks Serviece API
+              Powered by Data From the National Parks Service API
 
                 CCC                            0000
                 CCC  CC                       000000            CCC

@@ -12,33 +12,36 @@ module DBCommunicator
     Park.find_by(name: park)
   end
 
-  def self.all_park_names
-    Park.all.map { |park| park.name }
-  end
-
   def self.surprising_park
-    parks=self.all_park_names
-    self.query_park(parks.sample)
+    Park.all.sample
   end
 
-  #park name
-  # TODO: figure out why it says "park name"
-  def self.lenient_name_search(name)
-    any_results=false
+  def self.park_search_helper(field, query)
+    any_results = false
     while !any_results
-      results=self.all_park_names.select do |n|
-        n.downcase.include?(name.downcase)
-      end
-      if results.length>0
-        any_results=true
+      results = Park.where("#{field} LIKE :query", query: "%#{query}%")
+      if !results.empty?
+        any_results = true
       else
         puts "No results! Please try another search"
-        name = gets.chomp
+        query = gets.chomp
       end
     end
-    results
+    results.map { |park| park.name }
   end
 
+  # returns an array of park names where the names approximately match the search query
+  def self.lenient_name_search(query)
+    self.park_search_helper("name", query)
+  end
+
+  # returns an array of park names where the designations approximately match the search query
+  def self.lenient_type_search(query)
+    self.park_search_helper("designation", query)
+  end
+
+  # returns an array of state arrays, where the first element is the full name
+  # and the second element is the state code
   def self.lenient_state_search(name)
     any_results=false
     while !any_results
@@ -55,19 +58,4 @@ module DBCommunicator
     results
   end
 
-  #park name
-  # TODO: figure out why it says "park name"
-  def self.lenient_type_search(name)
-    any_results=false
-    while !any_results
-      results = Park.where("designation like :designation", designation: "%#{name}%")
-      if results.length>0
-        any_results=true
-      else
-        puts "No results! Please try another search"
-        name = gets.chomp
-      end
-    end
-    results.map { |p| p.name}
-  end
 end
