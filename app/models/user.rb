@@ -5,14 +5,14 @@ class User < ActiveRecord::Base
 
     #user can add favorites (based on which park they are looking at/choose)
     def add_favorite(park)
-        a=Favorite.create(user_id: self.id, park_id: park.id)
-        self.favorites << a
-        park.favorites << a
+      Favorite.create(user: self, park: park)
+      # self (the ruby object) won't know that it has favorites until we reload it from the database
+      self.reload
     end
 
     def list_favorites
-      self.favorites.map do |f|
-        Park.find(f.park_id).name
+      self.parks.map do |park|
+        park.name
       end
     end
  end

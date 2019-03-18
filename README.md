@@ -9,36 +9,37 @@ See the following for a video demonstration of the program: https://www.youtube.
 ​
 The FTP App accesses a Sqlite3 Database using ActiveRecord. It implements CRUD (create, read, update, delete) actions and utilizes 5 models, which include User, Favorites, Park, State, and StatePark.
 
-##Install Instructions
+## Install Instructions
 To download, set up and run Find That Park, follow these steps:
 
-###Download Ruby and Rails
+### Download Ruby and Rails
 From [Rails Installer](http://railsinstaller.org/en), download Ruby and Rails.
 
-###Get an NPS API Key
+### Get an NPS API Key
 Get a personal API key from the National Parks Service by clicking [here](https://www.nps.gov/subjects/developer/get-started.htm).
 
-###Download the App
+### Download the App
 From the Command Line, download FTP App by typing the following:
 ````
 git clone git@github.com:loganwohlers/module-one-final-project-guidelines-seattle-web-career-021819.git
-cd module-one-final-project-guidelines-seattle-web-career-021819.git
+cd module-one-final-project-guidelines-seattle-web-career-021819
 ````
 
-###Add your personal NPS API Key to the App
+### Add your personal NPS API Key to the App
 This is an important step, the app will NOT run without your API key being added. Your API key will be kept in a secrets.yaml file for security purposes and to follow best practices.
 1. Create a new file in the config folder called secrets.yml (Yes, the file must have this name.)
 2. Open secrets.ymlexample (also in the config folder) and copy the contents of this file into secrets.yml.
 3. In secrets.yml, replace INSERT_YOUR_API_KEY_HERE with your new API key
 4. Save
 
-###Run the App in the Command Line
+### Run the App in the Command Line
 Returning to the command line, make sure you are still in the App's directory folder then enter the following:
 ````
 bundle install
 rake db:seed
 ruby bin/run.rb
 ````
+After the first time, you only need to run `ruby bin/run.rb` to run the program again.
 
 ### User Stories
 The following user stories guide how the user will interact with the Project.
